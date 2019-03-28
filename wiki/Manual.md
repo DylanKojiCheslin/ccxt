@@ -53,7 +53,7 @@ Full public and private HTTP REST APIs for all exchanges are implemented. WebSoc
 
 # Exchanges
 
-The ccxt library currently supports the following 134 cryptocurrency exchange markets and trading APIs:
+The ccxt library currently supports the following 133 cryptocurrency exchange markets and trading APIs:
 
 |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;logo&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;                                                                                                     | id                 | name                                                                                 | ver   | doc                                                                                              | certified                                                                                                                  |
 |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|--------------------------------------------------------------------------------------|:-----:|:------------------------------------------------------------------------------------------------:|----------------------------------------------------------------------------------------------------------------------------|
@@ -187,7 +187,6 @@ The ccxt library currently supports the following 134 cryptocurrency exchange ma
 |[![virwox](https://user-images.githubusercontent.com/1294454/27766894-6da9d360-5eea-11e7-90aa-41f2711b7405.jpg)](https://www.virwox.com)                                                     | virwox             | [VirWoX](https://www.virwox.com)                                                     | *     | [API](https://www.virwox.com/developers.php)                                                     |                                                                                                                             | Austria, EU                             |
 |[![xbtce](https://user-images.githubusercontent.com/1294454/28059414-e235970c-662c-11e7-8c3a-08e31f78684b.jpg)](https://www.xbtce.com)                                                       | xbtce              | [xBTCe](https://www.xbtce.com)                                                       | 1     | [API](https://www.xbtce.com/tradeapi)                                                            |                                                                                                                             | Russia                                  |
 |[![yobit](https://user-images.githubusercontent.com/1294454/27766910-cdcbfdae-5eea-11e7-9859-03fea873272d.jpg)](https://www.yobit.net)                                                       | yobit              | [YoBit](https://www.yobit.net)                                                       | 3     | [API](https://www.yobit.net/en/api/)                                                             |                                                                                                                             | Russia                                  |
-|[![yunbi](https://user-images.githubusercontent.com/1294454/28570548-4d646c40-7147-11e7-9cf6-839b93e6d622.jpg)](https://yunbi.com)                                                           | yunbi              | [YUNBI](https://yunbi.com)                                                           | 2     | [API](https://yunbi.com/documents/api/guide)                                                     |                                                                                                                             | China                                   |
 |[![zaif](https://user-images.githubusercontent.com/1294454/27766927-39ca2ada-5eeb-11e7-972f-1b4199518ca6.jpg)](https://zaif.jp)                                                              | zaif               | [Zaif](https://zaif.jp)                                                              | 1     | [API](https://techbureau-api-document.readthedocs.io/ja/latest/index.html)                       |                                                                                                                             | Japan                                   |
 |[![zb](https://user-images.githubusercontent.com/1294454/32859187-cd5214f0-ca5e-11e7-967d-96568e2e2bd1.jpg)](https://vip.zb.com/user/register?recommendCode=bn070u)                          | zb                 | [ZB](https://vip.zb.com/user/register?recommendCode=bn070u)                          | 1     | [API](https://www.zb.com/i/developer)                                                            |                                                                                                                             | China                                   |
 
@@ -3008,6 +3007,82 @@ class MyZaif extends \ccxt\zaif {
 ```
 
 # Error Handling
+
+The error handling with CCXT is done with the exception mechanism that is natively available with all languages.
+
+To handle the errors you should add a `try` block around the call to a unified method and catch the exceptions like you would normally do with your language:
+
+```JavaScript
+// JavaScript
+
+// try to call a unified method
+try {
+    const response = await exchange.fetchTicker ('ETH/BTC')
+    console.log (response)
+} catch (e) {
+    // if the exception is thrown, it is "caught" and can be handled here
+    // the handling reaction depends on the type of the exception
+    // and on the purpose or business logic of your application
+    if (e instanceof ccxt.NetworkError) {
+        console.log (exchange.id, 'fetchTicker failed due to a network error:', e.message)
+        // retry or whatever
+        // ...
+    } else if (e instanceof ccxt.ExchangeError) {
+        console.log (exchange.id, 'fetchTicker failed due to exchange error:', e.message)
+        // retry or whatever
+        // ...
+    } else {
+        console.log (exchange.id, 'fetchTicker failed with:', e.message)
+        // retry or whatever
+        // ...
+    }
+}
+```
+
+```Python
+# Python
+
+# try to call a unified method
+try:
+    response = await exchange.fetch_order_book('ETH/BTC')
+    print(ticker)
+except ccxt.NetworkError as e:
+    print(exchange.id, 'fetch_order_book failed due to a network error:', str(e))
+    # retry or whatever
+    # ...
+except ccxt.ExchangeError as e:
+    print(exchange.id, 'fetch_order_book failed due to exchange error:', str(e))
+    # retry or whatever
+    # ...
+except Exception as e:
+    print(exchange.id, 'fetch_order_book failed with:', str(e))
+    # retry or whatever
+    # ...
+```
+
+```PHP
+// PHP
+
+// try to call a unified method
+try {
+    $response = $exchange->fetch_trades('ETH/BTC');
+    print_r(ticker);
+} catch (\ccxt\NetworkError $e) {
+    echo $exchange->id . ' fetch_trades failed due to a network error: ' . $e->getMessage () . "\n";
+    // retry or whatever
+    // ...
+} catch (\ccxt\ExchangeError $e) {
+    echo $exchange->id . ' fetch_trades failed due to exchange error: ' . $e->getMessage () . "\n";
+    // retry or whatever
+    // ...
+} catch (Exception $e) {
+    echo $exchange->id . ' fetch_trades failed with: ' . $e->getMessage () . "\n";
+    // retry or whatever
+    // ...
+}
+```
+
+## Exception Hierarchy
 
 All exceptions are derived from the base BaseError exception, which, in its turn, is defined in the ccxt library like so:
 
